@@ -1,0 +1,9 @@
+a {
+    color: hotpink;
+}
+p {
+    background-color: antiquewhite;
+}
+p:nth-child(2) {
+    background-color: aliceblue;
+}
