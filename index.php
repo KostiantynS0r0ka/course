@@ -1,4 +1,7 @@
 <!DOCTYPE html>
+<?php
+session_start();
+?>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -10,21 +13,52 @@
             crossorigin="anonymous"></script>
 </head>
 <body>
-    <div class="container">
-        <br><br><br>
-        <?php
-            var_dump($_POST);
-        ?>
-        <br><br><br>
-        <?php if (
-                !empty($_POST['email'])
-        ) : ?>
-            <div class="alert alert-success" role="alert">
-                Ви вказали імейл <?= $_POST['email']; ?>
-            </div>
-        <?php endif; ?>
+<div class="container">
 
-        <br><br><br>
+    <br><br><br>
+    <?php
+    if (!isset($_COOKIE['counter'])) {
+        $counter = 0;
+    } else {
+        $counter = $_COOKIE['counter'];
+    }
+
+    $counter++;
+
+    setcookie('counter', $counter);
+
+
+    if (!empty($_POST['email'])) {
+        if (empty($_SESSION['user'])) {
+            $_SESSION['user'] = [];
+        }
+        $_SESSION['is_registered'] = true;
+
+        $id = count($_SESSION['user']);
+        $_SESSION['last_id'] = $id;
+
+        $_SESSION['user'][$id] = [
+            'name' => $_POST['name'],
+            'address' => $_POST['address'],
+            'email' => $_POST['email'],
+        ];
+        ?>
+        <div class="alert alert-success" role="alert">
+            Ви вказали імейл <?= $_POST['email']; ?>
+        </div>
+        <?php
+    }
+    ?>
+    <br><br><br>
+    <?php
+    var_dump($_COOKIE);
+    ?>
+    <br><br><br>
+
+    <?php
+    if (empty($_SESSION['is_registered']) || !$_SESSION['is_registered']) :
+        ?>
+
         <form method="post">
             <div class="mb-3">
                 <label for="exampleInputEmail1" class="form-label">Name</label>
@@ -62,6 +96,17 @@
             </div>
             <button type="submit" class="btn btn-primary">Submit</button>
         </form>
-    </div>
+    <?php
+    else :
+        ?>
+        <h1>You've already registered with E-mail
+            <span class="badge bg-secondary">
+                        <?= $_SESSION['user'][$_SESSION['last_id']]['email'] ?>
+                    </span>
+        </h1>
+    <?php
+    endif;
+    ?>
+</div>
 </body>
 </html>
