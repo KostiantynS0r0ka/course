@@ -1,6 +1,23 @@
 <!DOCTYPE html>
 <?php
-session_start();
+require_once('db.php');
+
+$con = getConnection();
+
+// Add new
+if (!empty($_POST['name']) && !empty($_POST['message'])) {
+    addNewMessage($con, htmlspecialchars($_POST['name']), htmlspecialchars($_POST['message']));
+}
+
+// Delete
+if (!empty($_GET['delete_message'])) {
+    deleteMessage($con, $_GET['delete_message']);
+}
+
+// Get actual list of messages
+$messages = getAllMessages($con);
+
+mysqli_close($con);
 ?>
 <html lang="en">
 <head>
@@ -15,98 +32,43 @@ session_start();
 <body>
 <div class="container">
 
-    <br><br><br>
-    <?php
-    if (!isset($_COOKIE['counter'])) {
-        $counter = 0;
-    } else {
-        $counter = $_COOKIE['counter'];
-    }
-
-    $counter++;
-
-    setcookie('counter', $counter);
-
-
-    if (!empty($_POST['email'])) {
-        if (empty($_SESSION['user'])) {
-            $_SESSION['user'] = [];
-        }
-        $_SESSION['is_registered'] = true;
-
-        $id = count($_SESSION['user']);
-        $_SESSION['last_id'] = $id;
-
-        $_SESSION['user'][$id] = [
-            'name' => $_POST['name'],
-            'address' => $_POST['address'],
-            'email' => $_POST['email'],
-        ];
-        ?>
-        <div class="alert alert-success" role="alert">
-            Ви вказали імейл <?= $_POST['email']; ?>
+    <div class="card">
+        <div class="card-header">
+            Chat
         </div>
-        <?php
-    }
-    ?>
+        <ul class="list-group list-group-flush">
+            <?php foreach ($messages as $message) : ?>
+                <li class="list-group-item">
+                    <strong><?= $message['name'] ?></strong> at
+                    <?= $message['date'] ?> :
+                    <i><?= $message['message'] ?></i>
+                    <a href="?delete_message=<?= $message['id'] ?>">X</a>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+    </div>
     <br><br><br>
-    <?php
-    var_dump($_COOKIE);
-    ?>
-    <br><br><br>
+    <form method="post">
+        <div class="mb-3">
+            <label for="exampleInputName" class="form-label">Name</label>
+            <input
+                    type="text"
+                    class="form-control"
+                    name="name"
+            >
+        </div>
+        <hr>
+        <div class="mb-3">
+            <label for="exampleInputMessage" class="form-label">Message</label>
+            <input
+                    type="text"
+                    class="form-control"
+                    name="message"
+            >
+        </div>
 
-    <?php
-    if (empty($_SESSION['is_registered']) || !$_SESSION['is_registered']) :
-        ?>
-
-        <form method="post">
-            <div class="mb-3">
-                <label for="exampleInputEmail1" class="form-label">Name</label>
-                <input
-                        type="text"
-                        class="form-control"
-                        name="name"
-                >
-            </div>
-            <hr>
-            <div class="mb-3">
-                <label for="exampleInputEmail1" class="form-label">Address 1</label>
-                <input
-                        type="text"
-                        class="form-control"
-                        name="address[]"
-                >
-            </div>
-            <div class="mb-3">
-                <label for="exampleInputEmail1" class="form-label">Address 2</label>
-                <input
-                        type="text"
-                        class="form-control"
-                        name="address[]"
-                >
-            </div>
-            <hr>
-            <div class="mb-3">
-                <label for="exampleInputEmail1" class="form-label">Email address</label>
-                <input
-                        type="email"
-                        class="form-control"
-                        name="email"
-                >
-            </div>
-            <button type="submit" class="btn btn-primary">Submit</button>
-        </form>
-    <?php
-    else :
-        ?>
-        <h1>You've already registered with E-mail
-            <span class="badge bg-secondary">
-                        <?= $_SESSION['user'][$_SESSION['last_id']]['email'] ?>
-                    </span>
-        </h1>
-    <?php
-    endif;
-    ?>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
 </div>
 </body>
 </html>
