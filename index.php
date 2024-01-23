@@ -2,22 +2,22 @@
 <?php
 require_once('db.php');
 
-$con = getConnection();
+$pdo = getPDO();
 
 // Add new
 if (!empty($_POST['name']) && !empty($_POST['message'])) {
-    addNewMessage($con, htmlspecialchars($_POST['name']), htmlspecialchars($_POST['message']));
+    addNewMessage($pdo, htmlspecialchars($_POST['name']), htmlspecialchars($_POST['message']));
 }
 
 // Delete
 if (!empty($_GET['delete_message'])) {
-    deleteMessage($con, $_GET['delete_message']);
+    deleteMessage($pdo, $_GET['delete_message']);
 }
 
 // Get actual list of messages
-$messages = getAllMessages($con);
+$messages = getAllMessages($pdo);
 
-mysqli_close($con);
+$pdo = null;
 ?>
 <html lang="en">
 <head>

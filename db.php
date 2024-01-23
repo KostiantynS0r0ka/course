@@ -1,19 +1,16 @@
 <?php
 
-function getConnection()
+function getPDO(): PDO
 {
     $host = 'localhost';
     $username = 'root';
     $password = 'root';
     $dbName = 'myDB';
 
-    $con = mysqli_connect($host, $username, $password, $dbName);
+    $pdo = new PDO("mysql:host=$host;dbname=$dbName", $username, $password);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    if ($con->connect_error) {
-        die("Connection failed " . $con->connect_error);
-    }
-
-    return $con;
+    return $pdo;
 }
 
 function showAndDie($somethin)
@@ -24,33 +21,40 @@ function showAndDie($somethin)
     die();
 }
 
-function getAllMessages($con): array
+function getAllMessages(PDO $pdo): array
 {
     $data = [];
     $sql = "SELECT * FROM messages";
-    $result = $con->query($sql);
+    $queryRunner = $pdo->query($sql);
+    $queryRunner->setFetchMode(PDO::FETCH_ASSOC);
 
-    while($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
+    while ($row = $queryRunner->fetch()) {
         $data[] = $row;
     }
 
     return $data;
 }
 
-function addNewMessage($con, $name, $message)
+function addNewMessage(PDO $pdo, string $name, string $message)
 {
-    $sql = "INSERT INTO messages (name, message) VALUES (\"$name\", \"$message\")";
+    $sql = "INSERT INTO messages (name, message) VALUES (:name, :message)";
 
-    if (!mysqli_query($con, $sql)) {
+    $queryRunner = $pdo->prepare($sql);
+
+    $params = compact('name', 'message');
+
+    if (!$queryRunner->execute($params)) {
         echo 'Something went wrong';
     }
 }
 
-function deleteMessage($con , $id)
+function deleteMessage($pdo, $id)
 {
-    $sql = "DELETE FROM messages WHERE id=". $id;
+    $sql = "DELETE FROM messages WHERE id=:id";
 
-    if (!mysqli_query($con, $sql)) {
+    $queryRunner = $pdo->prepare($sql);
+
+    if (!$queryRunner->execute(['id' => $id])) {
         echo 'Something went wrong';
     }
 }
