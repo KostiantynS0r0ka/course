@@ -4,18 +4,12 @@ require_once('db.php');
 
 $pdo = getPDO();
 
-// Add new
-if (!empty($_POST['name']) && !empty($_POST['message'])) {
-    addNewMessage($pdo, htmlspecialchars($_POST['name']), htmlspecialchars($_POST['message']));
-}
+
 
 // Delete
 if (!empty($_GET['delete_message'])) {
     deleteMessage($pdo, $_GET['delete_message']);
 }
-
-// Get actual list of messages
-$messages = getAllMessages($pdo);
 
 $pdo = null;
 ?>
@@ -28,6 +22,54 @@ $pdo = null;
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
             crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.js"
+            integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <script>
+        function appendComment(name, message) {
+            $("#list-of-messages").append(
+                "<li class='list-group-item'><strong>" + name + "</strong>: " + message + "</li>"
+            );
+        }
+
+        $(document).ready(function () {
+
+            $.ajax({
+                url: 'messages.php',
+                method: 'GET',
+                success: function (request) {
+                    if (request.data) {
+                        request.data.map(function (comment) {
+                            appendComment(comment.name, comment.message);
+                        })
+                    }
+                }
+            })
+
+            $("form").submit(function (event) {
+                event.preventDefault();
+
+                let data1 = $(this).serialize();
+                let data2 = {
+                    name: $(this).find('input[name="name"]').val(),
+                    message: $(this).find('input[name="message"]').val()
+                };
+                console.log('Variant 1 :' + data1);
+                console.log('Variant 2 :');
+                console.log(data2);
+
+                $.ajax({
+                    url: 'create-new-message.php',
+                    method: 'POST',
+                    data: data2,
+                    success: function (request) {
+                        appendComment(data2.name, data2.message);
+                        $('form').trigger("reset");
+                    }
+                })
+            })
+        });
+
+    </script>
 </head>
 <body>
 <div class="container">
@@ -36,15 +78,8 @@ $pdo = null;
         <div class="card-header">
             Chat
         </div>
-        <ul class="list-group list-group-flush">
-            <?php foreach ($messages as $message) : ?>
-                <li class="list-group-item">
-                    <strong><?= $message['name'] ?></strong> at
-                    <?= $message['date'] ?> :
-                    <i><?= $message['message'] ?></i>
-                    <a href="?delete_message=<?= $message['id'] ?>">X</a>
-                </li>
-            <?php endforeach; ?>
+        <ul class="list-group list-group-flush" id="list-of-messages">
+
         </ul>
     </div>
     <br><br><br>
