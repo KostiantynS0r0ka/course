@@ -1,73 +1,52 @@
 <?php
 
-// LivingCreature -> Monkey -> Human
-
-class LivingCreature
+class Shape
 {
-    public $movingSpeed = 1;
-    const MOVING_SPEED = 1;
-    const FOOD = 'Micro bacteries';
-    public function breathe(): string
-    {
-        return 'Inhale... Exhale....';
-    }
+    protected $mainDimension;
 
-    public function getMovingSpeed(): int
+    public function __construct($mainDimension)
     {
-        return static::MOVING_SPEED;
-//        return self::MOVING_SPEED;
-//        return $this->movingSpeed;
-    }
-
-    public function getFoodList(): string
-    {
-        return static::FOOD;
+        $this->mainDimension = $mainDimension;
     }
 }
 
-class Monkey extends LivingCreature
+class Square extends Shape
 {
-    const FOOD = 'Banana';
-    public $movingSpeed = 10;
-    const MOVING_SPEED = 10;
-    public function climbTree(): string
+    public function getArea()
     {
-        return 'Climbing a tree....';
+        return $this->mainDimension * $this->mainDimension;
     }
 }
 
-class Human extends Monkey
+class Circle extends Shape
 {
-    const FOOD = 'Salads';
-    const MOVING_SPEED = 25;
 
-    public function speak(): string
+    public function getArea()
     {
-        return 'Hello! I can speak!';
+        return 3.14 * $this->mainDimension * $this->mainDimension;
     }
 }
 
-$livingCreature = new LivingCreature;
-$monkey         = new Monkey;
-$human          = new Human;
+$figures = [];
 
-echo $livingCreature->breathe() . PHP_EOL;
-echo $monkey->breathe() . PHP_EOL;
-echo $human->breathe() . PHP_EOL;
+$figures[]  = new Square(12);
+$figures[]  = new Circle(12);
+$figures[]  = new Square(10);
+$figures[]  = new Circle(112);
+$figures[]  = new Square(156);
+$figures[]  = new Square(16);
+$figures[]  = new Circle(17);
+$figures[]  = new Circle(123);
 
-echo $monkey->climbTree() . PHP_EOL;
-echo $human->climbTree() . PHP_EOL;
+foreach ($figures as $figure) {
+    echo $figure->getArea() . PHP_EOL;
+}
 
-echo $human->speak() . PHP_EOL;
-
-echo 'My speed is: ' . $livingCreature->getMovingSpeed() . PHP_EOL;
-echo 'My speed is: ' . $monkey->getMovingSpeed() . PHP_EOL;
-echo 'My speed is: ' . $human->getMovingSpeed() . PHP_EOL;
-
-
-echo 'I could eat: ' . $livingCreature->getFoodList() . PHP_EOL;
-echo 'I could eat: ' . $monkey->getFoodList() . PHP_EOL;
-echo 'I could eat: ' . $human->getFoodList() . PHP_EOL;
-
-
-
+//144
+//452.16
+//100
+//39388.16
+//24336
+//256
+//907.46
+//47505.06
