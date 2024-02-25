@@ -20,7 +20,11 @@ class Track extends Terrain
     protected const GRIP_RESISTANT = 1;
 }
 
-class Vehicle
+
+// Vehicle -> EarthVehicle -> ....  .... ....
+// Vehicle -> MoonVehicle -> ....  .... ....
+
+abstract class Vehicle
 {
     protected string $manufacturer;
     protected string $model;
@@ -41,13 +45,10 @@ class Vehicle
         return $this->speed;
     }
 
-    public function getCurrentMaxSpeed(): int|float
-    {
-        return $this->speed;
-    }
+    abstract public function getCurrentMaxSpeed(): int|float;
 }
 
-class Motorbike extends Vehicle
+abstract class EarthVehicle extends Vehicle
 {
     protected Terrain $terrain;
 
@@ -61,16 +62,39 @@ class Motorbike extends Vehicle
         parent::__construct($manufacturer, $model, $speed);
     }
 
+    abstract public function getReducingGripValue(): int|float;
+
     public function getCurrentMaxSpeed(): int|float
     {
-        $percentOfGripDecreasing = $this->terrain->getGripResistant();
-        return $this->speed - ($this->speed * $percentOfGripDecreasing / 100);
+
+        return $this->speed - $this->speed * $this->getReducingGripValue();
     }
 }
 
-class Car extends Vehicle
+abstract class MoonVehicle extends EarthVehicle
+{
+    public function getCurrentMaxSpeed(): int|float
+    {
+        $decreasedValueForMoon = $this->getReducingGripValue() / 2;
+        return $this->speed - $this->speed * $decreasedValueForMoon;
+    }
+}
+
+class Motorbike extends EarthVehicle
 {
 
+    public function getReducingGripValue(): int|float
+    {
+        return $this->terrain->getGripResistant() / 100;
+    }
+}
+
+class MoonVehicleType1 extends MoonVehicle
+{
+    public function getReducingGripValue(): int|float
+    {
+        return $this->terrain->getGripResistant() / 100;
+    }
 }
 
 $sandTerrain = new Sand;

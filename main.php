@@ -1,5 +1,9 @@
 <?php
 
+interface ShapeInterface
+{
+    public function getArea():int|float;
+}
 class Shape
 {
     protected $mainDimension;
@@ -10,18 +14,18 @@ class Shape
     }
 }
 
-class Square extends Shape
+class Square extends Shape implements ShapeInterface
 {
-    public function getArea()
+    public function getArea(): int|float
     {
         return $this->mainDimension * $this->mainDimension;
     }
 }
 
-class Circle extends Shape
+class Circle extends Shape implements ShapeInterface
 {
 
-    public function getArea()
+    public function getArea(): int|float
     {
         return 3.14 * $this->mainDimension * $this->mainDimension;
     }
@@ -37,9 +41,27 @@ $figures[]  = new Square(156);
 $figures[]  = new Square(16);
 $figures[]  = new Circle(17);
 $figures[]  = new Circle(123);
+//$figures[]  = new stdClass();
+
+class AreaCalculator
+{
+    private $storage = [];
+
+    public function addToStorage(ShapeInterface $object)
+    {
+        $this->storage[] = $object;
+    }
+    public function calculateArea(ShapeInterface $object)
+    {
+        echo $object->getArea() . PHP_EOL;
+    }
+}
+
+$areaCalculator = new AreaCalculator;
 
 foreach ($figures as $figure) {
-    echo $figure->getArea() . PHP_EOL;
+    $areaCalculator->calculateArea($figure);
+//    echo $figure->getArea() . PHP_EOL;
 }
 
 //144
