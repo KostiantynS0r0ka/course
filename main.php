@@ -1,5 +1,5 @@
 <?php
-
+require __DIR__ . '/vendor/autoload.php';
 interface ShapeInterface
 {
     public function getArea():int|float;
@@ -59,6 +59,7 @@ class AreaCalculator
 
 $areaCalculator = new AreaCalculator;
 
+dd($figures);
 foreach ($figures as $figure) {
     $areaCalculator->calculateArea($figure);
 //    echo $figure->getArea() . PHP_EOL;
