@@ -9,7 +9,7 @@ class Customer extends Model
 {
     protected $table = "customers";
 
-    public function myAwesomeRelation()
+    public function data()
     {
         return $this->hasMany(CustomerData::class);
     }

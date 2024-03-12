@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CustomerController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,16 +15,15 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('customers');
 });
 
-Route::get('test', function () {
-    return 'We are here!!!!';
-});
-
-Route::get('test/huge',
-    [
-        \App\Http\Controllers\TestController::class,
-        'requestTestHandler'
-    ]
+Route::get(
+    'customers',
+    [CustomerController::class, 'showAll']
 );
+
+Route::get(
+    'customers/{customer}',
+    [CustomerController::class, 'showCustomerData']
+)->name('customer.data');
