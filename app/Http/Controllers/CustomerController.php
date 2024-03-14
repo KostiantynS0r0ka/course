@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Customer;
+use Cassandra\Custom;
 use Illuminate\Http\Request;
 
 class CustomerController extends Controller
@@ -25,5 +26,17 @@ class CustomerController extends Controller
                 'customerData' => $customerData
             ]
         );
+    }
+
+    public function testAction(Request $request, int $id)
+    {
+        $model = Customer::findOrFail($id);//null
+
+        if (!$model) {
+            //...
+            return;
+        }
+
+        $name = $model->name;//null->name
     }
 }
